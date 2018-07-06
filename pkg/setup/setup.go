@@ -56,7 +56,8 @@ type Environment struct {
 	manifestStaticPodABSPath string
 	manifestConfigABSPath    string
 	secretsABSPath           string
-	networkABSPath           string
+	networkConfigABSPath     string
+	networkStateABSPath      string
 
 	kubeletRootDir string
 
@@ -163,7 +164,8 @@ func NewConfigSetup(givenRootPath string) (*Environment, error) {
 		manifestSystemdUnit:      path.Join(rootABSPath, defaultTemplates.ManifestSystemdUnit),
 		kubeletRootDir:           config.ViperConfig.GetString("kubelet-root-dir"),
 		secretsABSPath:           path.Join(rootABSPath, defaultSecretDirName),
-		networkABSPath:           path.Join(rootABSPath, defaultNetworkDirName),
+		networkConfigABSPath:     path.Join(rootABSPath, defaultNetworkDirName),
+		networkStateABSPath:      path.Join(rootABSPath, "networks"),
 		templateVersion:          getMajorMinorVersion(config.ViperConfig.GetString("hyperkube-version")),
 
 		kubeConfigUserPath:     config.ViperConfig.GetString("kubeconfig-path"),
@@ -291,7 +293,7 @@ func NewConfigSetup(givenRootPath string) (*Environment, error) {
 	}
 
 	containerRuntime := "docker"
-	ContainerRuntimeEndpoint := "/var/run/docker.sock"
+	ContainerRuntimeEndpoint := "/var/run/dockershim.sock"
 	if e.containerRuntimeInterface {
 		// TODO static to containerd
 		containerRuntime = "remote"
@@ -335,7 +337,7 @@ func (e *Environment) setupDirectories() error {
 		path.Join(e.manifestTemplatesABSPath, defaultTemplates.ManifestConfig),
 		e.etcdDataABSPath,
 		e.secretsABSPath,
-		e.networkABSPath,
+		e.networkConfigABSPath,
 		e.kubeletRootDir,
 	} {
 		glog.V(4).Infof("Creating directory: %s", dir)

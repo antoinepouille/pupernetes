@@ -116,7 +116,7 @@ func (e *Environment) Clean() error {
 		toRemove = append(toRemove, e.secretsABSPath)
 	}
 	if e.cleanOptions.Network {
-		toRemove = append(toRemove, e.networkABSPath)
+		toRemove = append(toRemove, e.networkConfigABSPath, e.networkStateABSPath)
 	}
 	if e.cleanOptions.Systemd {
 		glog.V(3).Infof("Shutting down systemd units")
